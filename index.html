@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+  body { margin: 0; padding: 0; }
+  .kitty { width: 40px; float: left; }
+  .kitty img { width: 100%; pointer-events: none; }
+  .preview {
+    z-index: 1;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background-color: rgba(255,255,255, 0.6);
+  }
+  .preview img {
+    width: 200px;
+  }
+</style>
+<div class='preview'></div>
+<body>
+<script>
+  let int = 555555;
+  let internal;
+
+  const preview = document.querySelector('.preview');
+  const base = 'https://img.cryptokitties.co/';
+  const hash = '0x06012c8cf97bead5deae237070f9587f8e7a266d/';
+  const fileExt = '.png';
+
+  const getImage = int => {
+    const src = [ base, hash, int, fileExt ].join('');
+    const img = document.createElement('img');
+    img.src = src;
+    return img;
+  }
+
+  const togglePreview = () => {
+    const { display } = preview.style;
+    preview.style.display = display === 'block' ? 'none' : 'block'
+  }
+
+  const handlePreviewClick = event => {
+    preview.firstChild.remove();
+    togglePreview();
+  }
+
+  const handleClick = event => {
+    event.preventDefault();
+    event.stopPropagation();
+    const img = event.target.firstChild;
+    preview.appendChild(img.cloneNode());
+    togglePreview();
+  }
+
+  const getLink = _ => {
+    const link = document.createElement('a');
+    link.href = '#';
+    link.classList.add('kitty');
+    link.addEventListener('click', handleClick);
+    return link;
+  }
+
+  const attachElement = el => document.body.appendChild(el);
+
+  const loop = _ => {
+    const link = getLink();
+    link.appendChild(getImage(int));
+    attachElement(link);
+    int--;
+    // TODO: clear interval when it gets to 111111?
+  }
+
+  const main = _ => {
+    internal = setInterval(loop, 1000);
+    preview.addEventListener('click', handlePreviewClick);
+  }
+
+  main();
+</script>
+</body>
+</html>
